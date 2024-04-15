@@ -6,6 +6,7 @@ import SideBar from "@/components/SideBar";
 import Header from "@/components/Header";
 import { useContext } from "react";
 import GlobalState from "@/context";
+import ExpenseData from "@/context/ExpenseContext";
 
 const roboto = Roboto({
   weight: "400",
@@ -26,12 +27,16 @@ export default function RootLayout({
     <html lang="en">
       <body className={roboto.className}>
         <GlobalState>
-          <div className="flex h-full w-full items-start">
-            <div className="w-full h-full">
-              <Header />
-              <div className="h-full overflow-x-hidden bg-primary-gray-100">{children}</div>
+          <ExpenseData>
+            <div className="flex h-full w-full items-start">
+              <div className="h-full w-full">
+                <Header />
+                <div className="bg-primary-gray-100 h-full overflow-x-hidden">
+                  {children}
+                </div>
+              </div>
             </div>
-          </div>
+          </ExpenseData>
         </GlobalState>
       </body>
     </html>

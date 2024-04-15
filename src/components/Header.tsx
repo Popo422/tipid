@@ -23,9 +23,9 @@ function Header(props) {
   ];
 
   return (
-    <nav className="header-content flex w-full ">
+    <nav className="header-content flex w-full fixed top-0 bg-white">
       {sideBarOpen && (
-        <div className="absolute z-20 h-full w-full">
+        <div className="absolute z-20 h-screen w-full">
           <SideBar />
         </div>
       )}

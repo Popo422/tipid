@@ -13,16 +13,14 @@ import {
 } from "@/components/ui/popover";
 import { BiCalendar } from "react-icons/bi";
 
-export function DatePicker() {
-  const [date, setDate] = React.useState<Date>();
-
+export function DatePicker({ date, onInput }) {
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button
           variant={"outline"}
           className={cn(
-            "w-full min-w-[100px] justify-start text-left font-normal",
+            "relative w-full min-w-[100px] justify-start text-left font-normal",
             !date && "text-muted-foreground",
           )}
         >
@@ -34,7 +32,7 @@ export function DatePicker() {
         <Calendar
           mode="single"
           selected={date}
-          onSelect={setDate}
+          onSelect={onInput}
           initialFocus
         />
       </PopoverContent>

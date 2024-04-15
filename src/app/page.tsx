@@ -34,7 +34,7 @@ export default function Home() {
     }
   };
   return (
-    <main className="flex h-full w-full flex-col items-center justify-between">
+    <main className="flex h-full w-full flex-col items-center justify-between mt-[112px]">
       <div className="h-full w-full">
         <Separator />
         <div className="h-full w-full border-b-2">

@@ -1,42 +1,36 @@
-import React, { Component } from "react";
+import React, { useRef, useEffect } from "react";
 
-export default class AbsoluteOutsideAlerter extends Component {
-  constructor(props) {
-    super(props);
-    this.setWrapperRef = this.setWrapperRef.bind(this);
-    this.handleClickOutside = this.handleClickOutside.bind(this);
-  }
+const AbsoluteOutsideAlerter = ({ clickedOutside, className, children }) => {
+  const wrapperRef = useRef(null);
 
-  componentDidMount() {
-    document.addEventListener("mousedown", this.handleClickOutside);
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener("mousedown", this.handleClickOutside);
-  }
-
-  setWrapperRef(node) {
-    this.wrapperRef = node;
-  }
-
-  handleClickOutside(event) {
-    if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
-      if (this.props.clickedOutside) {
-        event.stopPropagation();
-        this.props.clickedOutside();
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+        if (clickedOutside) {
+          event.stopPropagation();
+          clickedOutside();
+        }
       }
-    }
-  }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [clickedOutside]);
 
-  render() {
-    return (
-      <div ref={this.setWrapperRef} className={this.props.className}>
-        {React.Children.map(this.props.children, child =>
-          React.cloneElement(child, {
-            ref: this.setWrapperRef
-          })
-        )}
-      </div>
-    );
-  }
-}
+  const childrenWithRef = React.Children.map(children, (child) => {
+    if (React.isValidElement(child)) {
+      return React.cloneElement(child, {
+        ref: wrapperRef,
+      });
+    }
+    return child;
+  });
+  return (
+    <div ref={wrapperRef} className={className}>
+      {childrenWithRef}
+    </div>
+  );
+};
+
+export { AbsoluteOutsideAlerter };

@@ -1,15 +1,22 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
-import { BiArrowBack, BiGroup, BiPlus, BiX } from "react-icons/bi";
+import {
+  BiArrowBack,
+  BiAward,
+  BiCoinStack,
+  BiGroup,
+  BiMoney,
+  BiMoneyWithdraw,
+  BiPlus,
+  BiX,
+} from "react-icons/bi";
 import { format } from "date-fns";
 import { Separator } from "../ui/separator";
 import { DatePicker } from "../input/DatePicker";
 import { Input } from "../ui/input";
-import { IoFastFood, IoFastFoodOutline } from "react-icons/io5";
-import { Select } from "../ui/select";
+import { IoFastFood } from "react-icons/io5";
 import SelectAutocomplete from "../SelectAutocomplete";
-import { FaDog, FaHeart, FaPaintBrush } from "react-icons/fa";
+import { FaDog, FaPaintBrush } from "react-icons/fa";
 import { IoCar } from "react-icons/io5";
-import { GiArtificialHive } from "react-icons/gi";
 import { IoHome } from "react-icons/io5";
 import { IoShirtOutline } from "react-icons/io5";
 import { IoMdCut } from "react-icons/io";
@@ -17,11 +24,19 @@ import { IoMedkitOutline } from "react-icons/io5";
 import { IoSchoolOutline } from "react-icons/io5";
 import { FaGift } from "react-icons/fa";
 import { AiOutlineQuestionCircle } from "react-icons/ai";
+import { ExpenseContext } from "@/context/ExpenseContext";
+import { expenseTracker } from "../modes/DailyTypes";
 const AddTrackerField = (props) => {
   const { setOpenTrackerField } = props;
-  const [tracker, setTracker] = useState("Income");
-  const [showCategory, setShowCategory] = useState(false);
-  const expenseCategory = [
+  // const [tracker, setTracker] = useState("Income");
+  const [currentTracker, setCurrentTracker] = useState<expenseTracker>({
+    mode: "expense",
+    amount: 0,
+    type: "",
+  });
+  const expenseData = useContext(ExpenseContext);
+  const { expense, setExpense } = expenseData;
+  const EXPENSE_CATEGORY = [
     { value: "food", label: "Food", icon: <IoFastFood /> },
     { value: "social", label: "Social Life", icon: <BiGroup /> },
     { value: "pets", label: "Pets", icon: <FaDog /> }, // Assuming you want to use the same icon for pets as for social life
@@ -34,6 +49,19 @@ const AddTrackerField = (props) => {
     { value: "education", label: "Education", icon: <IoSchoolOutline /> },
     { value: "gifts", label: "Gifts", icon: <FaGift /> },
     { value: "other", label: "Other", icon: <AiOutlineQuestionCircle /> },
+  ];
+
+  const ACCOUNT = [
+    { value: "cash", label: "Cash" },
+    { value: "accounts", label: "Accounts" },
+    { value: "card", label: "Card" },
+  ];
+  const INCOME_CATEGORY = [
+    { value: "allowance", label: "Allowance", icon: <BiMoneyWithdraw /> },
+    { value: "salary", label: "Salary", icon: <BiMoney /> },
+    { value: "petty_cash", label: "Petty Cash", icon: <BiCoinStack /> },
+    { value: "bonus", label: "Bonus", icon: <BiAward /> },
+    { value: "other", label: "Other" },
   ];
   return (
     <>
@@ -49,7 +77,11 @@ const AddTrackerField = (props) => {
             >
               <BiArrowBack size={22} />
             </button>
-            <span className={`text-white`}>{tracker}</span>
+            <span className={`text-white`}>
+              {currentTracker?.mode &&
+                currentTracker?.mode?.charAt(0).toUpperCase() +
+                  currentTracker?.mode.slice(1)}
+            </span>
           </div>
 
           <div className="flex justify-between gap-5"></div>
@@ -58,20 +90,35 @@ const AddTrackerField = (props) => {
         <div className="no-scrollbar flex h-full w-full flex-col gap-5 overflow-y-scroll p-2">
           <div className="flex w-full justify-around gap-3 text-gray-300">
             <button
-              className={`rounded bg-gray-600 px-4 py-1 shadow-lg ${tracker === "Income" && "border-2 border-blue-300 text-white"}`}
-              onClick={() => setTracker("Income")}
+              className={`rounded bg-gray-600 px-4 py-1 shadow-lg ${currentTracker?.mode === "income" && "border-2 border-blue-300 text-white"}`}
+              onClick={() =>
+                setCurrentTracker((prevTracker) => ({
+                  ...prevTracker,
+                  mode: "income",
+                }))
+              }
             >
               Income
             </button>
             <button
-              className={`rounded bg-gray-600 px-4 py-1 shadow-lg ${tracker === "Expense" && "border-2 border-red-300 text-white"}`}
-              onClick={() => setTracker("Expense")}
+              className={`rounded bg-gray-600 px-4 py-1 shadow-lg ${currentTracker?.mode === "expense" && "border-2 border-red-300 text-white"}`}
+              onClick={() =>
+                setCurrentTracker((prevTracker) => ({
+                  ...prevTracker,
+                  mode: "expense",
+                }))
+              }
             >
               Expense
             </button>
             <button
-              className={`rounded bg-gray-600 px-4 py-1 shadow-lg ${tracker === "Transfer" && "border-2 border-green-300 text-white"}`}
-              onClick={() => setTracker("Transfer")}
+              className={`rounded bg-gray-600 px-4 py-1 shadow-lg ${currentTracker?.mode === "transfer" && "border-2 border-green-300 text-white"}`}
+              onClick={() =>
+                setCurrentTracker((prevTracker) => ({
+                  ...prevTracker,
+                  mode: "transfer",
+                }))
+              }
             >
               Transfer
             </button>
@@ -80,40 +127,97 @@ const AddTrackerField = (props) => {
             {" "}
             <div className="relative  flex w-full items-center justify-around">
               <span>Date</span>
-              <div className="w-8/12">
+              <div className="relative w-8/12">
                 {" "}
-                <DatePicker />
+                <DatePicker
+                  date={currentTracker?.date}
+                  onInput={(selectedDate: Date) =>
+                    setCurrentTracker((prevTracker) => ({
+                      ...prevTracker,
+                      date: selectedDate,
+                    }))
+                  }
+                />
               </div>
             </div>
             <div className="relative  flex w-full items-center justify-around">
               <span>Amount</span>
               <div className="mr-2  w-8/12">
                 {" "}
-                <Input className="bg-white" />
+                <Input
+                  className="bg-white"
+                  value={currentTracker?.amount}
+                  type="number"
+                  onChange={(event) => {
+                    setCurrentTracker((prevTracker) => ({
+                      ...prevTracker,
+                      amount: parseInt(event.target.value),
+                    }));
+                  }}
+                />
               </div>
             </div>
             <div className="relative  flex w-full items-center justify-around">
               <span>Category</span>
               <div className="mr-2 w-8/12">
                 {" "}
-                <SelectAutocomplete options={expenseCategory} />
+                <SelectAutocomplete
+                  options={
+                    currentTracker?.mode === "expense"
+                      ? EXPENSE_CATEGORY
+                      : INCOME_CATEGORY
+                  }
+                  onChange={(input: any) => {
+                    setCurrentTracker((prevTracker) => ({
+                      ...prevTracker,
+                      type: input.value,
+                    }));
+                  }}
+                />
               </div>
             </div>
             <div className="relative  flex w-full items-center justify-around">
               <span>Account</span>
               <div className="mr-2 w-8/12">
                 {" "}
-                <SelectAutocomplete options={expenseCategory} />
+                <SelectAutocomplete
+                  options={ACCOUNT}
+                  onChange={(input: any) => {
+                    setCurrentTracker((prevTracker) => ({
+                      ...prevTracker,
+                      account: input.value,
+                    }));
+                  }}
+                />
               </div>
             </div>
             <div className="relative  flex w-full items-center justify-around">
               <span>Note</span>
               <div className="w-8/12">
                 {" "}
-                <Input className="bg-white" />
+                <Input
+                  className="bg-white"
+                  onChange={(event) => {
+                    setCurrentTracker((prevTracker) => ({
+                      ...prevTracker,
+                      notes: event.target.value,
+                    }));
+                  }}
+                />
               </div>
             </div>
           </div>
+        </div>
+        <div className="flex w-full items-center justify-end pr-2">
+          <button
+            className="bg-blue rounded-md bg-blue-400 p-3 text-white hover:bg-blue-500"
+            onClick={() => {
+              setExpense((prevExpense) => [...prevExpense, currentTracker]);
+              setOpenTrackerField(false);
+            }}
+          >
+            Save
+          </button>
         </div>
       </div>
     </>
