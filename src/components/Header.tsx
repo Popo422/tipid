@@ -7,6 +7,7 @@ import { useContext, useState } from "react";
 import SideBar from "./SideBar";
 import { GlobalContext } from "@/context";
 import { Separator } from "./ui/separator";
+import SigninButton from "./SigninButton";
 
 function Header(props) {
   const pathname = usePathname();
@@ -23,7 +24,7 @@ function Header(props) {
   ];
 
   return (
-    <nav className="header-content flex w-full fixed top-0 bg-white">
+    <nav className="header-content fixed top-0 flex w-full bg-white">
       {sideBarOpen && (
         <div className="absolute z-20 h-screen w-full">
           <SideBar />
@@ -42,7 +43,7 @@ function Header(props) {
           <span className="text-base font-bold text-blue-400 md:text-xl">
             Tipid
           </span>
-          <BiSolidBell size={30} color="black" />
+          <SigninButton />
         </div>
         <div className="flex  w-full  justify-center gap-2 py-2 shadow">
           <ul className="flex w-full justify-between gap-2 text-sm font-semibold text-black md:mx-40 md:text-base ">
