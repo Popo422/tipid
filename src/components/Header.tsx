@@ -1,20 +1,18 @@
 "use client";
 
-import { BiSearch, BiSolidBell, BiMenu } from "react-icons/bi";
-
+import { BiMenu } from "react-icons/bi";
 import { usePathname } from "next/navigation";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import SideBar from "./SideBar";
 import { GlobalContext } from "@/context";
-import { Separator } from "./ui/separator";
 import SigninButton from "./SigninButton";
+import User from "./User";
+import { useSession } from "@/context/SessionContext";
 
 function Header(props) {
-  const pathname = usePathname();
   const sideBarState = useContext(GlobalContext);
   const { sideBarOpen, setSideBarOpen, currentMode, setCurrentMode } =
     sideBarState;
-  // const [openSideBar, setOpenSideBar] = useState(false);
   const list = [
     { title: "Daily" },
     { title: "Calendar" },
@@ -22,9 +20,10 @@ function Header(props) {
     { title: "Total" },
     { title: "Note" },
   ];
+  const { user } = useSession();
 
   return (
-    <nav className="header-content fixed top-0 flex w-full bg-white">
+    <nav className={`header-content fixed top-0 flex w-full bg-white `}>
       {sideBarOpen && (
         <div className="absolute z-20 h-screen w-full">
           <SideBar />
@@ -43,7 +42,9 @@ function Header(props) {
           <span className="text-base font-bold text-blue-400 md:text-xl">
             Tipid
           </span>
-          <SigninButton />
+          <div className="w-[200px]">
+            <User />
+          </div>
         </div>
         <div className="flex  w-full  justify-center gap-2 py-2 shadow">
           <ul className="flex w-full justify-between gap-2 text-sm font-semibold text-black md:mx-40 md:text-base ">

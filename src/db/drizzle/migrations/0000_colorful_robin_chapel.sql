@@ -30,6 +30,12 @@ CREATE TABLE IF NOT EXISTS "dc-manager" (
 	"userId" integer NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "session" (
+	"id" text PRIMARY KEY NOT NULL,
+	"userId" integer NOT NULL,
+	"expires_at" timestamp with time zone NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "dc-user" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"employeeId" uuid DEFAULT gen_random_uuid() NOT NULL,
@@ -39,32 +45,32 @@ CREATE TABLE IF NOT EXISTS "dc-user" (
 	"password" varchar(256) NOT NULL
 );
 --> statement-breakpoint
-DROP TABLE "admin";--> statement-breakpoint
-DROP TABLE "auditHistory";--> statement-breakpoint
-DROP TABLE "employee";--> statement-breakpoint
-DROP TABLE "item";--> statement-breakpoint
-DROP TABLE "manager";--> statement-breakpoint
-DROP TABLE "user";--> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "dc-admin" ADD CONSTRAINT "dc-admin_userId_dc-user_id_fk" FOREIGN KEY ("userId") REFERENCES "dc-user"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "dc-admin" ADD CONSTRAINT "dc-admin_userId_dc-user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."dc-user"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "dc-employee" ADD CONSTRAINT "dc-employee_userId_dc-user_id_fk" FOREIGN KEY ("userId") REFERENCES "dc-user"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "dc-employee" ADD CONSTRAINT "dc-employee_userId_dc-user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."dc-user"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "dc-employee" ADD CONSTRAINT "dc-employee_managerId_dc-manager_id_fk" FOREIGN KEY ("managerId") REFERENCES "dc-manager"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "dc-employee" ADD CONSTRAINT "dc-employee_managerId_dc-manager_id_fk" FOREIGN KEY ("managerId") REFERENCES "public"."dc-manager"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "dc-manager" ADD CONSTRAINT "dc-manager_userId_dc-manager_id_fk" FOREIGN KEY ("userId") REFERENCES "dc-manager"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "dc-manager" ADD CONSTRAINT "dc-manager_userId_dc-manager_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."dc-manager"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "session" ADD CONSTRAINT "session_userId_dc-user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."dc-user"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

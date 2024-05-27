@@ -1,12 +1,12 @@
 {
-  "version": "5",
-  "dialect": "pg",
+  "version": "6",
+  "dialect": "postgresql",
   "entries": [
     {
       "idx": 0,
-      "version": "5",
-      "when": 1711546803121,
-      "tag": "0010_overjoyed_maria_hill",
+      "version": "6",
+      "when": 1715947147944,
+      "tag": "0000_colorful_robin_chapel",
       "breakpoints": true
     }
   ]

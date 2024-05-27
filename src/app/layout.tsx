@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import { Inter, Roboto } from "next/font/google";
+import { Roboto } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/Header";
 import GlobalState from "@/context";
 import ExpenseData from "@/context/ExpenseContext";
-import { NextAuthProvider } from "@/sessionprovider";
+
+import { SessionProvider } from "@/context/SessionContext";
+import { validateRequest } from "../../auth";
 
 const roboto = Roboto({
   weight: "400",
@@ -16,20 +17,20 @@ const metadata: Metadata = {
   description: "A finance Tracker app",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const sessionData = await validateRequest();
   return (
     <html lang="en">
       <body className={roboto.className}>
-        <NextAuthProvider>
+        <SessionProvider value={sessionData}>
           <GlobalState>
             <ExpenseData>
               <div className="flex h-full w-full items-start">
                 <div className="h-full w-full">
-                  <Header />
                   <div className="bg-primary-gray-100 h-full overflow-x-hidden">
                     {children}
                   </div>
@@ -37,7 +38,7 @@ export default function RootLayout({
               </div>
             </ExpenseData>
           </GlobalState>
-        </NextAuthProvider>
+        </SessionProvider>
       </body>
     </html>
   );

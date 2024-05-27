@@ -1,1 +1,0 @@
-ALTER TABLE "item" ADD COLUMN "quantity" varchar(10) NOT NULL;

@@ -1,11 +1,11 @@
 {
-  "id": "5d0de64c-a531-4994-bd1c-e197033f514d",
+  "id": "e0224cc1-f36c-4a40-8ffd-1b07b94b32fd",
   "prevId": "00000000-0000-0000-0000-000000000000",
-  "version": "5",
-  "dialect": "pg",
+  "version": "6",
+  "dialect": "postgresql",
   "tables": {
-    "admin": {
-      "name": "admin",
+    "public.dc-admin": {
+      "name": "dc-admin",
       "schema": "",
       "columns": {
         "id": {
@@ -23,10 +23,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "admin_userId_user_id_fk": {
-          "name": "admin_userId_user_id_fk",
-          "tableFrom": "admin",
-          "tableTo": "user",
+        "dc-admin_userId_dc-user_id_fk": {
+          "name": "dc-admin_userId_dc-user_id_fk",
+          "tableFrom": "dc-admin",
+          "tableTo": "dc-user",
           "columnsFrom": [
             "userId"
           ],
@@ -40,8 +40,8 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "auditHistory": {
-      "name": "auditHistory",
+    "public.dc-auditHistory": {
+      "name": "dc-auditHistory",
       "schema": "",
       "columns": {
         "id": {
@@ -68,8 +68,8 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "employee": {
-      "name": "employee",
+    "public.dc-employee": {
+      "name": "dc-employee",
       "schema": "",
       "columns": {
         "id": {
@@ -93,10 +93,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "employee_userId_user_id_fk": {
-          "name": "employee_userId_user_id_fk",
-          "tableFrom": "employee",
-          "tableTo": "user",
+        "dc-employee_userId_dc-user_id_fk": {
+          "name": "dc-employee_userId_dc-user_id_fk",
+          "tableFrom": "dc-employee",
+          "tableTo": "dc-user",
           "columnsFrom": [
             "userId"
           ],
@@ -106,10 +106,10 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "employee_managerId_manager_id_fk": {
-          "name": "employee_managerId_manager_id_fk",
-          "tableFrom": "employee",
-          "tableTo": "manager",
+        "dc-employee_managerId_dc-manager_id_fk": {
+          "name": "dc-employee_managerId_dc-manager_id_fk",
+          "tableFrom": "dc-employee",
+          "tableTo": "dc-manager",
           "columnsFrom": [
             "managerId"
           ],
@@ -123,8 +123,8 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "item": {
-      "name": "item",
+    "public.dc-item": {
+      "name": "dc-item",
       "schema": "",
       "columns": {
         "id": {
@@ -145,6 +145,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "quantity": {
+          "name": "quantity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
         "date": {
           "name": "date",
           "type": "date",
@@ -153,7 +159,7 @@
         },
         "description": {
           "name": "description",
-          "type": "text",
+          "type": "varchar(256)",
           "primaryKey": false,
           "notNull": false
         },
@@ -169,8 +175,8 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "manager": {
-      "name": "manager",
+    "public.dc-manager": {
+      "name": "dc-manager",
       "schema": "",
       "columns": {
         "id": {
@@ -188,10 +194,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "manager_userId_manager_id_fk": {
-          "name": "manager_userId_manager_id_fk",
-          "tableFrom": "manager",
-          "tableTo": "manager",
+        "dc-manager_userId_dc-manager_id_fk": {
+          "name": "dc-manager_userId_dc-manager_id_fk",
+          "tableFrom": "dc-manager",
+          "tableTo": "dc-manager",
           "columnsFrom": [
             "userId"
           ],
@@ -205,8 +211,50 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "user": {
-      "name": "user",
+    "public.session": {
+      "name": "session",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "userId": {
+          "name": "userId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "session_userId_dc-user_id_fk": {
+          "name": "session_userId_dc-user_id_fk",
+          "tableFrom": "session",
+          "tableTo": "dc-user",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.dc-user": {
+      "name": "dc-user",
       "schema": "",
       "columns": {
         "id": {
@@ -217,9 +265,10 @@
         },
         "employeeId": {
           "name": "employeeId",
-          "type": "varchar(256)",
+          "type": "uuid",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "firstName": {
           "name": "firstName",
